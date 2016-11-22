@@ -63,14 +63,14 @@ function analyse() {
 
 			// si on a déjà trouvé un mot, on cherche le mot suivant à partir de la position du mot précédent
 			// var count = 0;
-			var index = texte.indexOf(numericallyVague[k], searchFrom);
+			// var index = texte.indexOf(numericallyVague[k], searchFrom);
 			
 			// while ( index != -1 ) {
    // 				count++;
    // 				index = texte.indexOf( "x",index + 1 );
 			// }
 
-			// var index = texte.indexOf(numericallyVague[k] + (" " || "," || "."), searchFrom+50);
+			var index = texte.indexOf(numericallyVague[k] + (" " || "," || "."), searchFrom+50);
 			
 			print(index);
 
