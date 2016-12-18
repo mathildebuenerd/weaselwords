@@ -18,9 +18,9 @@
 
   "content_scripts": [
     {
-      "matches": ["http://www.nytimes.com/*"],
+      "matches": ["<all_urls>"],
       // "matches": ["http*"],
-      "js": ["borderify.js"]
+      "js": ["findweaselwords.js"]
     }
   ]
 

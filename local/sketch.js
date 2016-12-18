@@ -1,166 +1,147 @@
 
 
-  var texte;
-  var numericallyVague = [	"most", "mostly", "Of course","some", "many", "experts", "most", "mainly", "largely", "on the whole", "usually", "commonly", "pretty often",
-  							"Most", "Mostly", "Some", "Many", "Experts", "Most", "Mainly", "Largely", "On the whole", "Usually", "Commonly", "Pretty often"];
+// Tableau des expressions à trouver
+ var numericallyVague = [	"most", "mostly", "of course", "largely", "some", "probably", "the most common", "or more", "or less", "linked to", "has links to", "scholars", "almost", "certainly", "experts", "many", "often", "it is said", "it is known", "people say", "it has been", "critics", "it stands to reason", "questions have been raised", "experience shows", "may have", "officially", "it turns out", "award-winning", "a recent study", "come to be", "came to be", "up to", "vast majority", "good", "better", "upright", "honorable", "moral", "righteous", "great", "true",
+"bad", "worst", "immoral", "evil", "wrong", "corrupt", "wicked", "iniquitous", "unlawful", "naughty", "hateful", "odious", "repugnant", "repellent", "disgusting", "sinful", "harmful"];
 
-  var adverbs = [		"probably", "certainly", "often", "in general", "generally", "broadly speaking", "of course", "obviously", "clearly", "evidently", "needless to say",
-  						"Probably", "Certainly", "Often", "In general", "Generally", "Broadly speaking", "Of course", "Obviously", "Clearly", "Evidently", "Needless to say"
- 	
-  							]
+ var paragraphe;
+ var contentParagraphe;
 
-  var passive = [		"it is known", "it is said"
-  							]
+createButton();
 
 
-  var vague = "numericallyVague";
- 
+function createButton() {
+	// alert('commencé');
+	var myButton = document.createElement('button');
+	myButton.style.position = "fixed";
+	myButton.style.width = "150px";
+	myButton.style.height = "100px";
+	myButton.style.top = "250px";
+	myButton.style.left = "50px";
+	myButton.style.zIndex = "9999999";
+	myButton.style.padding = "10px";
+	myButton.style.backgroundColor = "blue";
+	myButton.style.color = "white";
+	myButton.innerHTML = "Activer";
+	myBody = document.getElementsByTagName('div')[0];
+	document.body.insertBefore(myButton,myBody);
+	// alert('fini');
+	myButton.addEventListener('click', setup);	
+	
+}
 
 function setup() {
-  createCanvas(windowWidth,windowHeight);
-  texte = document.getElementById('texte').innerHTML;
-  baliseTexte = document.getElementById('texte');
 
-  // print(baliseTexte);
-  analyse();
-}
+	// createButton();
 
-
-function draw() {
-
+	// Récupère les textes
+	paragraphe = document.querySelectorAll('p, h1, h2,h3,h4,h5,h6,span,aside');
+	analyse();
+	decouper();
 
 }
 
-function addBalise(index, word, length, textLength) {
 
-			var newText = texte.slice(index, index + length);
-			var debutTexte = texte.slice(0, index);
-			newText = "<span class='" + vague + "'>" + word + "</span>";
-			var suiteTexte = texte.slice(index+ length, textLength);
-			
-
-			texte = debutTexte + newText + suiteTexte;
-
-}
-
+// Analyse le texte pour trouver les mots qu'on cherche
 function analyse() {
 
 	var foundWord = 0;
-	var searchFrom = 0;
 
-	// print("hello");
-
-// var mots = RiTa.tokenize(texte);
-
-// for (var i=0; i<mots.length; i++) {
-// print(mots[i] + "  mostly");
 
 	for (var k=0; k<numericallyVague.length;k++) {
-		
-		// foundWord = 0;
 
-		if(texte.search(numericallyVague[k]) != -1) {
+		for (var p=0; p<paragraphe.length; p++) {
 
-			// si on a déjà trouvé un mot, on cherche le mot suivant à partir de la position du mot précédent
-			// var count = 0;
-			// var index = texte.indexOf(numericallyVague[k], searchFrom);
+			contentParagraphe = paragraphe[p].innerHTML;
 			
-			// while ( index != -1 ) {
-   // 				count++;
-   // 				index = texte.indexOf( "x",index + 1 );
-			// }
+			var maRegex = new RegExp(numericallyVague[k] + " ", "gi");
+			// console.log(maRegex);
 
-			var index = texte.indexOf(numericallyVague[k] + (" " || "," || "."), searchFrom+50);
-			
-			print(index);
+			var monTableau;
 
-			if (index != -1) {
-				addBalise(index, numericallyVague[k], numericallyVague[k].length, texte.length);
-			}
+
+			// Tant que l'on trouve un des mots de la liste dans le paragraphe
+			while ((monTableau = maRegex.exec(contentParagraphe)) !== null) {
+
+
+				// indexOf doesn't work with regExp so we need to combine substr() and search()
+    			var index = contentParagraphe.substr(0).search(maRegex);
+
+
+				//alert("monTableau " + monTableau + " index " + index +" maRegex " + maRegex);
+
+				// si on a trouvé un mot, on lui ajoute la balise
+				// if (index != -1) {
+					addBalise(index, numericallyVague[k].length, contentParagraphe.length);
+				// }
+
+				paragraphe[p].innerHTML = contentParagraphe;
+
+				// searchFrom = maRegex.lastIndex;
+
+				
 
 		}
 
 	} // for
 
+// decouper();
 
-
-	// for (var k=0; k<numericallyVague.length;k++) {
-
-	// 	foundWord = 0;
-
-	// 		if(texte.search(adverbs[k]) != -1) {
-
-	// 		print(adverbs[k] + " index " + texte.search(adverbs[k]));
-
-	// 		// si on a déjà trouvé un mot, on cherche le mot suivant à partir de la position du mot précédent
-	// 		if (foundWord > 0) {
-	// 			searchFrom = index+1;
-	// 		}
-
-	// 		var index = texte.indexOf(adverbs[k], searchFrom+50);
-
-	// 		 // print("index " + index);
-
-	// 		if (index != -1) {
-
-	// 		var newText = texte.slice(index, index + adverbs[k].length);
-	// 		var debutTexte = texte.slice(0, index);
-	// 		newText = "<span class='adverbs'>" + adverbs[k] + "</span>";
-	// 		var suiteTexte = texte.slice(index+adverbs[k].length, texte.length);
-			
-
-	// 		texte = debutTexte + newText + suiteTexte;
-
-	// 		foundWord++;
-
-	// 		}
-	// 	}
-
-	// }//for
-
-// foundWord = 0;
-
-	// for (var k=0; k<numericallyVague.length;k++) {
-
-	// 	if(texte.search(passive[k]) != -1) {
-
-	// 		// si on a déjà trouvé un mot, on cherche le mot suivant à partir de la position du mot précédent
-	// 		if (foundWord > 0) {
-	// 			searchFrom = index+1;
-	// 		}
-
-	// 		var index = texte.indexOf(passive[k], searchFrom+50);
-
-	// 		 // print("index " + index);
-
-	// 		if (index != -1) {
-
-	// 		var newText = texte.slice(index, index + passive[k].length);
-	// 		var debutTexte = texte.slice(0, index);
-	// 		newText = "<span class='passive'>" + passive[k] + "</span>";
-	// 		var suiteTexte = texte.slice(index+passive[k].length, texte.length);
-			
-
-	// 		texte = debutTexte + newText + suiteTexte;
-
-	// 		foundWord++;
-
-	// 		}
-
-	// }
-
-
- // } // for k
-
-	document.getElementById('texte').innerHTML = texte;
-
-
-for (var j=0;j<document.getElementsByClassName(vague).length; j++) {
-	document.getElementsByClassName(vague)[j].style.color = "red";
+}
 }
 
+
+
+// Ajoute un span autour des mots trouvés
+function addBalise(index, length, textLength) {
+
+
+
+			var word = contentParagraphe.slice(index, index + length);
+			var debutTexte = contentParagraphe.slice(0, index);
+			var ouvertureBalise = "<span class='vague'>";
+			var fermetureBalise = "</span>";
+			var suiteTexte = contentParagraphe.slice(index+ length, textLength);
+
+			// on assemble le début du texte + la balise + le mot
+			contentParagraphe = debutTexte + ouvertureBalise + word + fermetureBalise + suiteTexte;
 
 }
 
 
 
+
+/****** Animation ******/
+
+setInterval( function() {
+
+		var motsHasardeux = document.getElementsByClassName('char');
+		var listeAngles = ["-40", "-30", "-20", "-10", "10", "20", "30", "40"];
+		
+		for(var i=0; i<motsHasardeux.length; i++) {
+			var hasard= Math.ceil(Math.random()*listeAngles.length);
+			
+			motsHasardeux[i].style.display = "inline-block";
+			motsHasardeux[i].style.position = "relative";
+			motsHasardeux[i].style.transition = "2s ease";
+			motsHasardeux[i].style.transform = "rotate(" + listeAngles[hasard-1] + "deg)";
+
+	}
+	}, 2000);
+
+
+
+
+
+/******** Découpe les mots ********/
+
+function decouper() {
+	console.log("ça marche la découpe!");
+     array = document.getElementsByClassName('vague');    
+     for (i=0; i<array.length; i++) {
+          expression = array[i].innerHTML; chaine = '';
+          for (var j=0; j<expression.length; j++) {
+               chaine += "<span class='char'>" + expression.substr(j, 1) + "</span>" ; }
+          array[i].innerHTML = chaine; 
+      }
+} // decouper
