@@ -29,16 +29,17 @@ function createButton() {
         right: "30px",
         margin: "0 !important",
         zIndex: "9999",
-        padding: "15px",
+        padding: "20px",
         backgroundColor: "#30e391",
         color: "white",
         cursor: "pointer",
         boxShadow: "0 3px 5px rgba(0,0,0,0.1)",
-        fontSize: "1.5em",
+        fontSize: "1.2em",
+        fontWeight: "700"
     });
     myButton.setAttribute('id', 'weaselExtensionController');
 
-    myButton.innerHTML = "🙊  Find weasel words";
+    myButton.innerHTML = `🙊  Find weasel words`;
     document.body.appendChild(myButton);
 
     // Add the listener to lauche the analyze when we click the button
@@ -54,7 +55,6 @@ function findWeaselWords() {
 
     nbLettres+=paragraphe.textContent.length;
 
-
     analyze();
     separateLetters();
     doStats();
@@ -66,7 +66,7 @@ function analyze() {
     for (const word of weaselWordList) {
 
         contentParagraphe = paragraphe.innerHTML;
-        console.log("contentParagraphe " + contentParagraphe);
+
         const maRegex = new RegExp(word + " ", "gi");
         let monTableau;
 
@@ -75,7 +75,7 @@ function analyze() {
 
             // indexOf doesn't work with regExp so we need to combine substr() and search()
             const index = contentParagraphe.substr(0).search(maRegex);
-            addBalise(index, word.length, contentParagraphe.length);
+            addTag(index, word.length, contentParagraphe.length);
             paragraphe.innerHTML = contentParagraphe;
 
             let isNew = true;
@@ -104,18 +104,14 @@ function analyze() {
 }
 
 
-// Ajoute un span class="vague" autour des mots trouvés
+function addTag(index, length, textLength) {
 
-function addBalise(index, length, textLength) {
-
+    // Add a span class="single-weasel-word" around each weasel word
     const word = contentParagraphe.slice(index, index + length);
-    const debutTexte = contentParagraphe.slice(0, index);
-    const ouvertureBalise = "<span class='vague'>";
-    const fermetureBalise = "</span>";
-    const suiteTexte = contentParagraphe.slice(index+ length, textLength);
+    const textBefore = contentParagraphe.slice(0, index);
+    const textAfter = contentParagraphe.slice(index+ length, textLength);
 
-    // on assemble le début du texte + la balise + le mot
-    contentParagraphe = debutTexte + ouvertureBalise + word + fermetureBalise + suiteTexte;
+    contentParagraphe = `${textBefore} <span class='single-weasel-word'>${word}</span> ${textAfter}`;
 }
 
 
@@ -146,7 +142,7 @@ setInterval( function() {
 function separateLetters() {
 
     let listeMots = [];
-    array = document.getElementsByClassName('vague');
+    array = document.querySelectorAll('.single-weasel-word');
 
 // permet d'avoir les mots trouvés mais pas la regex concernée ('most' et 'Most' sont différents);
 // corrigé avec l'utilisation de toUpperCase puis toLowerCase
@@ -161,8 +157,6 @@ function separateLetters() {
     for (let j=0; j<array.length; j++) {
         nbWeaselWords += array[j].textContent.length;
     }
-
-    // console.log("nbWeaselWords " + nbWeaselWords);
 
     for (i=0; i<array.length; i++) {
         expression = array[i].innerHTML; chaine = '';
@@ -180,22 +174,23 @@ function doStats() {
     const initRatio = (nbWeaselWords*100/nbLettres);
     const ratio = Math.round(initRatio*1000)/1000;
 
-    const myButton = document.querySelector('weaselExtensionController');
+    const myButton = document.querySelector('#weaselExtensionController');
 
-    afficheRatio.innerHTML = "Ratio | " + ratio;
-    afficheRatio.innerHTML += "<br/>Most used | " + foundWords[0].word;
-
-    afficheRatio.style.position = "fixed";
-    afficheRatio.style.right = "30px";
-    afficheRatio.style.zIndex = "9999999";
-    afficheRatio.style.opacity = "0.9999";
-    afficheRatio.style.top = "300px";
-    afficheRatio.style.color = "red";
-    afficheRatio.style.border = "3px solid red";
-    afficheRatio.style.backgroundColor = "rgba(255,255,255,0.8)";
-    afficheRatio.style.padding = "10px";
-    afficheRatio.style.margin = "0!important";
-    afficheRatio.style.fontSize = "15px";
+    // Add some style 8D
+    Object.assign(afficheRatio.style, {
+        position: "fixed",
+        right: "30px",
+        zIndex: "9999999",
+        opacity: "0.9999",
+        top: "300px",
+        color: "red",
+        border: "3px solid red",
+        backgroundColor: "rgba(255,255,255,0.8)",
+        padding: "10px",
+        margin: "0!important",
+        fontSize: "15px"
+    });
+    afficheRatio.innerHTML = `Ratio: ${ratio} <br>Most used: ${foundWords[0].word}`;
 
     document.body.appendChild(myButton);
 
