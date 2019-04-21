@@ -1,0 +1,24 @@
+{
+  "description": "Find the weasel words in news websites",
+  "manifest_version": 2,
+  "name": "Weasel Words Finder",
+  "version": "1.0",
+  "homepage_url": "http://alternative.mathildebuenerd.fr",
+  "icons": {
+    "48": "icons/border-48.png"
+  },
+
+  "applications": {
+    "gecko": {
+      "id": "mathildebuenerd@mozilla.org",
+      "strict_min_version": "45.0"
+    }
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["FindWeaselWords.js"]
+    }
+  ]
+}
