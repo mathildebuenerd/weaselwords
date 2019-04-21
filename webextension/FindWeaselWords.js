@@ -1,3 +1,5 @@
+console.log(`je lis le script`);
+
 class FindWeaselWords {
 
     constructor() {
@@ -189,6 +191,8 @@ class FindWeaselWords {
 
 const app = new FindWeaselWords();
 app.init();
+
+
 
 
 // class FoundWord
