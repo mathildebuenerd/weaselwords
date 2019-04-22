@@ -116,7 +116,6 @@ class FindWeaselWords {
         document.head.appendChild(myStyleTag);
     }
 
-
     createButton() {
         // Create the main UI button and add it to the DOM
         const myButton = document.createElement('div');
@@ -227,10 +226,9 @@ class FindWeaselWords {
             }
             wordTag.innerHTML = newWord;
         }
-    } // decouper
+    }
 
     animateLetters() {
-        console.log("animate letters");
         setInterval( () => {
             const weaselWords = document.querySelectorAll(`.char`);
             const angleList = ["-30", "-20", "-10", "0", "10", "20", "30"];
