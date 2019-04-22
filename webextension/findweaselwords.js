@@ -9,24 +9,120 @@ class FindWeaselWords {
     }
 
     init() {
-        console.log(`j'init`)
         this.createButton();
     }
 
     findWeaselWords() {
-        console.log(`je vais findWeaselWords`)
-
+        this.addStyleTag();
         this.analyze();
         this.separateLetters();
+        this.animateLetters();
         this.doStats();
     }
+
+    addStyle(element, properties) {
+        Object.assign(element.style, properties);
+    }
+
+    addStyleTag() {
+        const properties = `
+        #weasel-stats {
+            position: fixed;
+            right: 30px;
+            width: 450px;
+            min-width: 400px;
+            max-width: 600px;
+            z-index: 9999999;
+            top: 170px;
+            color: #333;
+            background-color: white;
+            padding: 0 30px 20px 30px;
+            font-size: 1.2em;
+            box-shadow: rgba(0, 0, 0, 0.1) 0px 3px 5px;
+            border-left: 10px solid #2196F3;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            0% {opacity: 0}
+            100% {opacity: 1}
+        }
+        .weasel-page-title {
+            font-style: italic;
+            width: 50%;
+            min-width: 200px;
+            margin-right: 30px;
+        }
+        #weasel-stats-intro {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .weasel-ratio {
+            display: flex;
+            flex-direction: column;
+            background-color: #ececec;
+            border-radius: 100%;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            width: 200px;
+            color: #3e3e3e;
+            box-shadow: 2px 10px 0 #0003;
+        }
+        .weasel-ratio .weasel-emoji {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+        .weasel-ratio .weasel-label {
+            text-align: center;
+            padding: 2px 10px;
+        }
+        .weasel-label {
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .weasel-top-list {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 0;
+        }
+        .weasel-top-list li {
+            display: flex;
+            flex-direction: column;
+            margin: 10px;
+            background-color: #2196F3;
+            padding: 10px;
+            border-radius: 100%;
+            align-items: center;
+            height: 100px;
+            width: 100px;
+            box-shadow: 1px 5px 0px #0003;
+            justify-content: center;
+            color: white;
+        }
+        .weasel-top-list .weasel-emoji {
+            font-size: 1.4em;
+        }
+        .single-top-word {
+            font-weight: bold;
+            font-size: 1.1em;
+        }`;
+
+        const myStyleTag = document.createElement(`style`);
+        myStyleTag.appendChild(document.createTextNode(properties));
+        document.head.appendChild(myStyleTag);
+    }
+
 
     createButton() {
         // Create the main UI button and add it to the DOM
         const myButton = document.createElement('div');
 
         // Add some style 8D
-        Object.assign(myButton.style, {
+        this.addStyle(myButton, {
             position: "fixed",
             top: "100px",
             right: "30px",
@@ -90,12 +186,8 @@ class FindWeaselWords {
             return b.occurence - a.occurence;
         });
 
-        console.log("foundwords", this.foundWords);
-
         document.body.innerHTML = this.pageContent;
     }
-
-    doStats() {}
 
     addTag(index, length) {
 
@@ -103,7 +195,6 @@ class FindWeaselWords {
 
         // Add a span class="single-weasel-word" around each weasel word
         const word = this.pageContent.slice(index, index + length);
-        console.log(`word`, word)
         const textBefore = this.pageContent.slice(0, index);
         const textAfter = this.pageContent.slice(index + length, textLength);
 
@@ -112,13 +203,11 @@ class FindWeaselWords {
 
     getAllWords() {
 
-        console.log(`getallwords`)
         let wordList = [];
         const allWords = document.querySelectorAll('.single-weasel-word');
 
-// permet d'avoir les mots trouvés mais pas la regex concernée ('most' et 'Most' sont différents);
-// corrigé avec l'utilisation de toUpperCase puis toLowerCase
         for (const word of allWords) {
+            // As "most" and "Most" are two different strings, we combine toUpperCase and toLowerCase to brings them together
             const formattedWord = word.innerHTML.toUpperCase().toLowerCase();
             wordList.push(formattedWord);
         }
@@ -127,12 +216,10 @@ class FindWeaselWords {
     }
 
     separateLetters() {
-        console.log(`separate letters`)
-
+        // surround each letter with a <span> so that we can animate each letter individually
         const allWords = document.querySelectorAll('.single-weasel-word');
 
         for (const wordTag of allWords) {
-            console.log(`wordTag`, wordTag);
             const word = wordTag.textContent;
             let newWord = '';
             for (const letter in word) {
@@ -143,6 +230,7 @@ class FindWeaselWords {
     } // decouper
 
     animateLetters() {
+        console.log("animate letters");
         setInterval( () => {
             const weaselWords = document.querySelectorAll(`.char`);
             const angleList = ["-30", "-20", "-10", "0", "10", "20", "30"];
@@ -159,29 +247,58 @@ class FindWeaselWords {
     }
 
     doStats() {
+        console.log("do stats");
         const afficheRatio = document.createElement(`div`);
-        const initRatio = (nbWeaselWords*100/ (document.body.textContent.length));
+        afficheRatio.setAttribute(`id`, `weasel-stats`);
+        const totalWeaselWords = this.getAllWords().length;
+        // console.log(this.getAllWords());
+        const initRatio = (totalWeaselWords*100/ (document.body.textContent.length));
         const ratio = Math.round(initRatio*1000)/1000;
 
-        const myButton = document.querySelector('#weaselExtensionController');
+        afficheRatio.innerHTML = `
+            <h3>Clues</h3>
+         
+            <div id="weasel-stats-intro">
+                <p class="weasel-page-title">${document.title}</p>
+                <span class="weasel-ratio">
+                    <span class="weasel-emoji">📈</span>
+                    <span class="weasel-label">Weasel word ratio</span>
+                    <span>${ratio}</span>
+                </span>
+            </div>
+            
+            <span class="weasel-top"> 
+                <span class="weasel-label">Top used</span>
+                <ol class="weasel-top-list">
+                    <li>
+                        <span class="weasel-emoji">👑</span>
+                        <span class="single-top-word">${this.foundWords[0].word}</span>
+                        <span class="single-top-word-occurence">${this.foundWords[0].occurence}</span>
+                    </li>
+                    <li>
+                        <span class="single-top-word">${this.foundWords[1].word}</span>
+                        <span class="single-top-word-occurence">${this.foundWords[1].occurence}</span>
+                    </li>
+                    <li>
+                        <span class="single-top-word">${this.foundWords[2].word}</span>
+                        <span class="single-top-word-occurence">${this.foundWords[2].occurence}</span>
+                    </li>
+                    <li>
+                        <span class="single-top-word">${this.foundWords[3].word}</span>
+                        <span class="single-top-word-occurence">${this.foundWords[3].occurence}</span>
+                    </li>
+                    <li>
+                        <span class="single-top-word">${this.foundWords[4].word}</span>
+                        <span class="single-top-word-occurence">${this.foundWords[4].occurence}</span>
+                    </li>
+                </ol>
+            </span>
+            `;
 
-        // Add some style 8D
-        Object.assign(afficheRatio.style, {
-            position: "fixed",
-            right: "30px",
-            zIndex: "9999999",
-            opacity: "0.9999",
-            top: "300px",
-            color: "red",
-            border: "3px solid red",
-            backgroundColor: "rgba(255,255,255,0.8)",
-            padding: "10px",
-            margin: "0!important",
-            fontSize: "15px"
-        });
-        afficheRatio.innerHTML = `Ratio: ${ratio} <br>Most used: ${this.foundWords[0].word}`;
+        document.body.appendChild(afficheRatio);
 
-        document.body.appendChild(myButton);
+        console.log(`--- Weasel words found ---`);
+        console.table(this.foundWords);
 
     }
 
@@ -199,4 +316,4 @@ class FoundWord {
     }
 }
 
-const weaselWordList = ["most", "mostly", "of course", "largely", "some", "a lot of", "probably", "countless", "the most common", "or more", "or less", "linked to", "has links to", "scholars", "almost", "certainly", "really", "experts", "many", "often", "it is said", "it is known", "it's said", "it's known", "people say", "it has been", "it's been", "critics", "it stands to reason", "questions have been raised", "experience shows", "may have", "officially", "it turns out", "award-winning", "a recent study", "come to be", "came to be", "up to", "vast majority", "good", "better", "upright", "honorable", "moral", "righteous", "hopefully", "great", "greatest", "grateful", "fantastic", "true", "beautiful", "very", "tough", "highly", "by the way", "bad", "worst", "nasty", "immoral", "evil", "wrong", "corrupt", "wicked", "iniquitous", "unlawful", "naughty", "hateful", "odious", "repugnant", "repellent", "disgusting", "sinful", "harmful", "horrible", "special", "let me tell", "i'll tell you", "believe me", "that's right", "nah", "media", "elite"];
+const weaselWordList = ["most", "mostly", "of course", "largely", "some", "a lot of", "probably", "countless", "the most common", "or more", "or less", "linked to", "has links to", "scholars", "almost", "certainly", "really", "experts", "so many", "many", "often", "it is said", "it is known", "it's said", "it's known", "people say", "it has been", "it's been", "critics", "it stands to reason", "questions have been raised", "experience shows", "may have", "officially", "it turns out", "award-winning", "a recent study", "come to be", "came to be", "up to", "vast majority", "good", "better", "upright", "honorable", "moral", "righteous", "hopefully", "great", "greatest", "grateful", "fantastic", "true", "beautiful", "every", "very", "tough", "highly", "by the way", "bad", "worst", "nasty", "immoral", "evil", "wrong", "corrupt", "wicked", "iniquitous", "unlawful", "naughty", "hateful", "odious", "repugnant", "repellent", "disgusting", "sinful", "harmful", "horrible", "special", "let me tell", "i'll tell you", "believe me", "that's right", "nah", "media", "elite"];
